@@ -30,15 +30,16 @@ export class PipelineStack extends cdk.Stack {
       props.gitHub.branch,
       {
         connectionArn: props.gitHub.connectionArn,
-      }
+      },
     );
 
     const synth = new ShellStep("Synth", {
       input: source,
       commands: [
+        "node -v",
         "npm ci --prefix cdk",
-        "npm run build --prefix cdk",
-        'cd cdk && npx cdk@2 synth -a "npx ts-node --prefer-ts-exts bin/cdk.ts" -o cdk.out && cd ..',
+        "npm run build --prefix cdk", // emits dist/
+        'npx cdk@2 synth -a "node cdk/dist/bin/cdk.js" -o cdk/cdk.out',
       ],
       primaryOutputDirectory: "cdk/cdk.out",
     });
@@ -50,7 +51,7 @@ export class PipelineStack extends cdk.Stack {
         "codePipeline",
         props.gitHub.branch,
         "",
-        "backend"
+        "backend",
       ),
       {
         pipelineName: getName(
@@ -58,7 +59,7 @@ export class PipelineStack extends cdk.Stack {
           "codePipeline",
           props.gitHub.branch,
           "",
-          "backend"
+          "backend",
         ),
         synth,
         crossAccountKeys: true,
@@ -67,15 +68,15 @@ export class PipelineStack extends cdk.Stack {
             buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
           },
         },
-      }
+      },
     );
 
     pipeline.addStage(
       new BedrockRespondStage(
         this,
         getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
-        props
-      )
+        props,
+      ),
     );
   }
 }

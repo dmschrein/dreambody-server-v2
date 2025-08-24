@@ -26,7 +26,7 @@ export class PipelineStack extends cdk.Stack {
     });
 
     const source = CodePipelineSource.connection(
-      props.gitHub.repo,
+      `${props.gitHub.owner}/${props.gitHub.repo}`,
       props.gitHub.branch,
       {
         connectionArn: props.gitHub.connectionArn,
@@ -49,10 +49,16 @@ export class PipelineStack extends cdk.Stack {
 
     const pipeline = new CodePipeline(
       this,
-      getName("dreambody", "codePipeline", props.gitHub.branch, "", "backend"),
+      getName(
+        "dreambody-v2",
+        "codePipeline",
+        props.gitHub.branch,
+        "",
+        "backend",
+      ),
       {
         pipelineName: getName(
-          "dreambody",
+          "dreambody-v2",
           "codePipeline",
           props.gitHub.branch,
           "",
@@ -71,7 +77,7 @@ export class PipelineStack extends cdk.Stack {
     pipeline.addStage(
       new BedrockRespondStage(
         this,
-        getName("dreambody", "stage", props.gitHub.branch, "", "backend"),
+        getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
         props,
       ),
     );

@@ -19,7 +19,7 @@ export class BedrockRespondStage extends cdk.Stage {
     new BedrockRespondStack(
       this,
       getName(
-        "dreambody",
+        "dreambody-v2",
         "stack",
         props.gitHub.branch,
         "",

@@ -39,7 +39,7 @@ export class PipelineStack extends cdk.Stack {
         "node -v",
         "npm ci --prefix cdk",
         "npm run build --prefix cdk",
-        'npx cdk@2 synth -a "npx ts-node --prefer-ts-exts cdk/bin/cdk.ts" -o cdk/cdk.out',
+        'cd cdk && npx cdk@2 synth -a "npx ts-node --prefer-ts-exts bin/cdk.ts" -o cdk.out && cd ..',
       ],
       primaryOutputDirectory: "cdk/cdk.out",
     });

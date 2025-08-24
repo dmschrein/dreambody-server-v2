@@ -12,7 +12,7 @@ export const pipelineEnvironments = [
     devOpsAccount: ACCOUNT_PIPELINE,
     gitHub: {
       owner: "dmschrein",
-      repo: "dmschrein/dreambody-server-v2", // <-- your repo
+      repo: "dreambody-server-v2", // <-- your repo
       branch: "dev", // <-- your branch
       connectionArn:
         "arn:aws:codeconnections:us-west-2:726314763292:connection/ea9757fc-3bfa-4f9b-ad58-6a8cfcf2d4a0",
@@ -23,7 +23,7 @@ export const pipelineEnvironments = [
   //   devOpsAccount: ACCOUNT_PIPELINE,
   //   gitHub: {
   //     owner: 'dmschrein',
-  //     repo: 'dmschrein/dreambody-server-api', // <-- your repo
+  //     repo: 'dmschrein/dreambody-server-v2', // <-- your repo
   //     branch: 'test', // <-- your branch
   //     connectionArn:
   //       'arn:aws:codeconnections:us-west-2:726314763292:connection/ea9757fc-3bfa-4f9b-ad58-6a8cfcf2d4a0',
@@ -34,7 +34,7 @@ export const pipelineEnvironments = [
   //   devOpsAccount: ACCOUNT_PIPELINE,
   //   gitHub: {
   //     owner: 'dmschrein',
-  //     repo: 'dmschrein/dreambody-server-api', // <-- your repo
+  //     repo: 'dmschrein/dreambody-server-v2', // <-- your repo
   //     branch: 'uat', // <-- your branch
   //     connectionArn:
   //       'arn:aws:codeconnections:us-west-2:726314763292:connection/ea9757fc-3bfa-4f9b-ad58-6a8cfcf2d4a0',
@@ -45,7 +45,7 @@ export const pipelineEnvironments = [
   //   devOpsAccount: ACCOUNT_PIPELINE,
   //   gitHub: {
   //     owner: 'dmschrein',
-  //     repo: 'dmschrein/dreambody-server-api', // <-- your repo
+  //     repo: 'dmschrein/dreambody-server-v2', // <-- your repo
   //     branch: 'main', // <-- your branch
   //     connectionArn:
   //       'arn:aws:codeconnections:us-west-2:726314763292:connection/ea9757fc-3bfa-4f9b-ad58-6a8cfcf2d4a0',

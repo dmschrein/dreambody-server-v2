@@ -26,37 +26,39 @@ export class PipelineStack extends cdk.Stack {
     });
 
     const source = CodePipelineSource.connection(
-      props.gitHub.repo,
+      `${props.gitHub.owner}/${props.gitHub.repo}`,
       props.gitHub.branch,
       {
         connectionArn: props.gitHub.connectionArn,
-      },
+      }
     );
 
     const synth = new ShellStep("Synth", {
       input: source,
       commands: [
-        "curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s 22",
-        "node -v", // should print v22.x
-        "npm -v",
-
         "npm ci --prefix cdk",
         "npm run build --prefix cdk",
-        'npx cdk@2 synth -a "npx ts-node --prefer-ts-exts cdk/bin/cdk.ts" -o cdk/cdk.out',
+        'cd cdk && npx cdk@2 synth -a "npx ts-node --prefer-ts-exts bin/cdk.ts" -o cdk.out && cd ..',
       ],
       primaryOutputDirectory: "cdk/cdk.out",
     });
 
     const pipeline = new CodePipeline(
       this,
-      getName("dreambody", "codePipeline", props.gitHub.branch, "", "backend"),
+      getName(
+        "dreambody-v2",
+        "codePipeline",
+        props.gitHub.branch,
+        "",
+        "backend"
+      ),
       {
         pipelineName: getName(
-          "dreambody",
+          "dreambody-v2",
           "codePipeline",
           props.gitHub.branch,
           "",
-          "backend",
+          "backend"
         ),
         synth,
         crossAccountKeys: true,
@@ -65,15 +67,15 @@ export class PipelineStack extends cdk.Stack {
             buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
           },
         },
-      },
+      }
     );
 
     pipeline.addStage(
       new BedrockRespondStage(
         this,
-        getName("dreambody", "stage", props.gitHub.branch, "", "backend"),
-        props,
-      ),
+        getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
+        props
+      )
     );
   }
 }

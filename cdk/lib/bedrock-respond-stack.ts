@@ -20,7 +20,7 @@ export class BedrockRespondStack extends Stack {
     const connectionLambda = new NodejsFunction(
       this,
       getName(
-        "dreambody",
+        "dreambody-v2",
         "lambda",
         props.gitHub.branch,
         "",
@@ -50,7 +50,13 @@ export class BedrockRespondStack extends Stack {
     // info lambda
     const infoLambda = new NodejsFunction(
       this,
-      getName("dreambody", "lambda", props.gitHub.branch, "", "websocketInfo"),
+      getName(
+        "dreambody-v2",
+        "lambda",
+        props.gitHub.branch,
+        "",
+        "websocketInfo",
+      ),
       {
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(__dirname, "../functions/webSocket-info.ts"),
@@ -83,7 +89,7 @@ export class BedrockRespondStack extends Stack {
     const webSocketApi = new WebSocketApi(
       this,
       getName(
-        "dreambody",
+        "dreambody-v2",
         "webSocketApi",
         props.gitHub.branch,
         "",
@@ -123,7 +129,7 @@ export class BedrockRespondStack extends Stack {
     const wsStage = new WebSocketStage(
       this,
       getName(
-        "dreambody",
+        "dreambody-v2",
         "webSocketStage",
         props.gitHub.branch,
         "",

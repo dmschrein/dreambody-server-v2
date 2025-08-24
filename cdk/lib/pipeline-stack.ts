@@ -35,12 +35,7 @@ export class PipelineStack extends cdk.Stack {
 
     const synth = new ShellStep("Synth", {
       input: source,
-      commands: [
-        "node -v",
-        "npm ci --prefix cdk",
-        "npm run build --prefix cdk",
-        'cd cdk && npx cdk@2 synth -a "npx ts-node --prefer-ts-exts bin/cdk.ts" -o cdk.out && cd ..',
-      ],
+      commands: ["cd cdk && npm ci", "npx cdk synth"],
       primaryOutputDirectory: "cdk/cdk.out",
     });
 

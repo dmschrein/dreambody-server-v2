@@ -1,29 +1,26 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
     "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "lib": ["es2022"],
-    "declaration": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": false,
+    "strict": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noEmit": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "strict": true,
+    "noEmit": false,
     "inlineSourceMap": true,
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"],
-    "types": ["node", "aws-lambda"]
+    "types": ["node", "aws-lambda"],
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out",
-    "test/**",
-    "**/__tests__/**",
-    "**/*.test.ts"
-  ]
+  "include": ["bin/**/*.ts", "lib/**/*.ts", "functions/**/*.ts"],
+  "exclude": ["node_modules", "cdk.out", "**/__tests__/**", "**/*.test.ts"]
 }

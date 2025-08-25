@@ -12,6 +12,8 @@ import { getName } from "../utils/resource-naming-util";
 import * as iam from "aws-cdk-lib/aws-iam";
 
 export class BedrockRespondStack extends Stack {
+  public readonly webSocketApi: WebSocketApi;
+  public readonly wsStage: WebSocketStage;
   constructor(parent: Construct, id: string, props: PipelineStackProps) {
     // super calls the parent constructor
     super(parent, id, props);
@@ -24,13 +26,13 @@ export class BedrockRespondStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "websocketConnection",
+        "websocketConnection"
       ),
       {
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(
           __dirname,
-          "../functions/websocket-connection-handler.ts",
+          "../functions/websocket-connection-handler.ts"
         ),
         handler: "handler",
         timeout: Duration.seconds(10),
@@ -44,7 +46,7 @@ export class BedrockRespondStack extends Stack {
           }),
         ],
         description: "Handles $connect and $disconnect",
-      },
+      }
     );
 
     // info lambda
@@ -55,7 +57,7 @@ export class BedrockRespondStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "websocketInfo",
+        "websocketInfo"
       ),
       {
         runtime: Runtime.NODEJS_22_X,
@@ -72,7 +74,7 @@ export class BedrockRespondStack extends Stack {
             ],
           }),
         ],
-      },
+      }
     );
 
     // echo lambda
@@ -93,35 +95,35 @@ export class BedrockRespondStack extends Stack {
         "webSocketApi",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend",
+        "bedrockRespondBackend"
       ),
       {
         description: "Minimal echo WebSocket API",
         connectRouteOptions: {
           integration: new WebSocketLambdaIntegration(
             "ConnectIntegration",
-            connectionLambda,
+            connectionLambda
           ),
         },
         disconnectRouteOptions: {
           integration: new WebSocketLambdaIntegration(
             "DisconnectIntegration",
-            connectionLambda,
+            connectionLambda
           ),
         },
-      },
+      }
     );
     // Add the echo and info routes
     webSocketApi.addRoute("echo", {
       integration: new WebSocketLambdaIntegration(
         "EchoIntegration",
-        echoLambda,
+        echoLambda
       ),
     });
     webSocketApi.addRoute("info", {
       integration: new WebSocketLambdaIntegration(
         "InfoIntegration",
-        infoLambda,
+        infoLambda
       ),
     });
 
@@ -133,14 +135,18 @@ export class BedrockRespondStack extends Stack {
         "webSocketStage",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend",
+        "bedrockRespondBackend"
       ),
       {
         webSocketApi: webSocketApi,
         stageName: "prod",
         autoDeploy: true,
-      },
+      }
     );
+
+    // Expose resources
+    this.webSocketApi = webSocketApi;
+    this.wsStage = wsStage;
 
     // Allow lambdas to post back to connections (execute-api:ManageConnections)
     const manageConnectionsArn = this.formatArn({
@@ -154,8 +160,8 @@ export class BedrockRespondStack extends Stack {
         new PolicyStatement({
           actions: ["execute-api:ManageConnections"],
           resources: [manageConnectionsArn],
-        }),
-      ),
+        })
+      )
     );
     // Give lambdas the management endpoint (HTTPS) to use ApiGatewayManagementApi
     // Note: wsStage.callbackUrl is the management endpoint
@@ -164,7 +170,7 @@ export class BedrockRespondStack extends Stack {
 
     // outputs
     new CfnOutput(this, "WebSocketWssUrl", {
-      value: `wss://${webSocketApi.apiId}.execute-api${this.region}.amazonaws.com/${wsStage.stageName}`,
+      value: `wss://${webSocketApi.apiId}.execute-api.${this.region}.amazonaws.com/${wsStage.stageName}`,
     });
     new CfnOutput(this, "WebSocketManagementHttpsUrl", {
       value: wsStage.callbackUrl,

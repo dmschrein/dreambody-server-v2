@@ -1,4 +1,4 @@
-// cdk/lib/stages/bedrock-invoke-stage.ts
+// cdk/lib/stages/bedrock-nodes-stage.ts
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { BedrockInvokeStack } from "../bedrock-invoke-stack";

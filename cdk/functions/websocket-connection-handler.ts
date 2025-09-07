@@ -32,7 +32,7 @@ export async function connectionHandler(event: APIGatewayEvent) {
       JSON.stringify({
         Connected: true,
         connectionId: connectionId,
-      })
+      }),
     );
   }
 
@@ -42,7 +42,7 @@ export async function connectionHandler(event: APIGatewayEvent) {
       JSON.stringify({
         Connected: false,
         connectionId: connectionId,
-      })
+      }),
     );
   }
 

@@ -8,7 +8,7 @@ const eventBridge = new EventBridgeClient({});
 const busName = process.env.RESPONSE_BUS_NAME!;
 
 export const handler = async (
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2> => {
   try {
     const body = event.body ? JSON.parse(event.body) : {};
@@ -38,7 +38,7 @@ export const handler = async (
             }),
           },
         ],
-      })
+      }),
     );
 
     return {

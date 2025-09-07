@@ -29,7 +29,7 @@ export class FlowVersion extends Construct {
       {
         description: props.description,
         flowArn: props.flow.flowArn,
-      }
+      },
     );
 
     this.version = this._resource.attrVersion;

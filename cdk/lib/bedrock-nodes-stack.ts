@@ -23,9 +23,22 @@ export class BedrockStack extends Stack {
         PromptVariant.text({
           variantName: "foundation",
           model:
-            bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+            bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0,
           promptText: dreambodyV2Prompt,
-          promptVariables: ["document"],
+          promptVariables: [
+            "age",
+            "sex",
+            "metrics",
+            "experience",
+            "medical",
+            "goals",
+            "schedule",
+            "equipment",
+            "diet_preferences",
+            "diet_constraints",
+            "activity",
+            "context",
+          ],
           inferenceConfiguration: {
             temperature: 0,
             topP: 0.999,
@@ -43,12 +56,12 @@ export class BedrockStack extends Stack {
     const promptDeployVersion = new PromptVersion(
       this,
       "promptVersion1",
-      promptVersionProps
+      promptVersionProps,
     );
 
     const inputNode = FlowNode.input({
       name: "FlowInputNode",
-      inputDataType: FlowNodeDataType.STRING,
+      inputDataType: FlowNodeDataType.OBJECT,
     });
 
     const dreambodyV2PromptNode = FlowNode.prompt({
@@ -57,22 +70,81 @@ export class BedrockStack extends Stack {
       promptArn: promptDeployVersion.versionArn,
       inputs: [
         {
-          name: "document",
+          name: "age",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.age" },
+        },
+        {
+          name: "sex",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.sex" },
+        },
+        {
+          name: "metrics",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.metrics" },
+        },
+        {
+          name: "experience",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.experience" },
+        },
+        {
+          name: "medical",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.medical" },
+        },
+        {
+          name: "goals",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.goals" },
+        },
+        {
+          name: "schedule",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.schedule" },
+        },
+        {
+          name: "equipment",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.equipment" },
+        },
+        {
+          name: "diet_preferences",
           type: FlowNodeDataType.STRING,
           valueFrom: {
             sourceNode: inputNode,
-            expression: "$.data",
+            expression: "$.diet_preferences",
           },
+        },
+        {
+          name: "diet_constraints",
+          type: FlowNodeDataType.STRING,
+          valueFrom: {
+            sourceNode: inputNode,
+            expression: "$.diet_constraints",
+          },
+        },
+        {
+          name: "activity",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.activity" },
+        },
+        {
+          name: "context",
+          type: FlowNodeDataType.STRING,
+          valueFrom: { sourceNode: inputNode, expression: "$.context" },
         },
       ],
     });
 
     const outputNode = FlowNode.output({
-      name: "outputNode",
+      name: "FlowOutputNode",
       outputData: {
         type: FlowNodeDataType.STRING,
         valueFrom: {
           sourceNode: dreambodyV2PromptNode,
+          expression: "$.modelCompletion",
         },
       },
     });

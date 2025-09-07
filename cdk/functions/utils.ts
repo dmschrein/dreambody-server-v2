@@ -1,6 +1,6 @@
 export default function generateLambdaProxyResponse(
   httpCode: number,
-  jsonBody: string
+  jsonBody: string,
 ) {
   return {
     body: jsonBody,

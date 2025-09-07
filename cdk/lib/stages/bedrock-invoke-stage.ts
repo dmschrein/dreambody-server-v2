@@ -15,9 +15,9 @@ export class BedrockInvokeStage extends cdk.Stage {
         "stack",
         props.gitHub.branch,
         "",
-        "bedrockInvoke"
+        "bedrockInvoke",
       ),
-      props
+      props,
     );
   }
 }

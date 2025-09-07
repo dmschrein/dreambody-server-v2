@@ -42,7 +42,7 @@ const headers = {
 };
 
 export const functionHandler = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   setLoggingLevel(logger);
 
@@ -58,12 +58,12 @@ export const functionHandler = async (
     parameterProps,
     {
       throwOnError: false,
-    }
+    },
   );
 
   if (paramErrors?.length) {
     logger.error(
-      `Missing required parameters from SSM: ${paramErrors.join(", ")}`
+      `Missing required parameters from SSM: ${paramErrors.join(", ")}`,
     );
     return {
       statusCode: 500,
@@ -170,7 +170,7 @@ export const functionHandler = async (
 
         if (flowResponse != undefined) {
           result = JSON.stringify(
-            (flowResponse as FlowOutputEvent).content?.document
+            (flowResponse as FlowOutputEvent).content?.document,
           );
 
           logger.debug("Flow output event received", {

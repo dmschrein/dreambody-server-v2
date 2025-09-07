@@ -33,7 +33,7 @@ export class PipelineStack extends cdk.Stack {
       props.gitHub.branch,
       {
         connectionArn: props.gitHub.connectionArn,
-      }
+      },
     );
 
     // Synth
@@ -51,7 +51,7 @@ export class PipelineStack extends cdk.Stack {
         "codePipeline",
         props.gitHub.branch,
         "",
-        "backend"
+        "backend",
       ),
       {
         pipelineName: getName(
@@ -59,7 +59,7 @@ export class PipelineStack extends cdk.Stack {
           "codePipeline",
           props.gitHub.branch,
           "",
-          "backend"
+          "backend",
         ),
         synth,
         crossAccountKeys: true,
@@ -68,31 +68,43 @@ export class PipelineStack extends cdk.Stack {
             buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
           },
         },
-      }
+      },
     );
 
     pipeline.addStage(
       new BedrockRespondStage(
         this,
         getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
-        props
-      )
+        props,
+      ),
     );
     //add bedrock node stage to the pipeline
     pipeline.addStage(
       new BedrockNodesStage(
         this,
-        getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
-        props
-      )
+        getName(
+          "dreambody-v2",
+          "stage",
+          props.gitHub.branch,
+          "",
+          "bedrockNodes",
+        ),
+        props,
+      ),
     );
     //add bedrock invoke stage to the pipeline
     pipeline.addStage(
       new BedrockInvokeStage(
         this,
-        getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
-        props
-      )
+        getName(
+          "dreambody-v2",
+          "stage",
+          props.gitHub.branch,
+          "",
+          "bedrockInvoke",
+        ),
+        props,
+      ),
     );
   }
 }

@@ -24,9 +24,9 @@ export class BedrockRespondStage extends cdk.Stage {
         "stack",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend"
+        "bedrockRespondBackend",
       ),
-      props
+      props,
     );
   }
 }

@@ -31,7 +31,7 @@ export function setLoggingLevel(logger: {
   const level = resolveLogLevel(
     (process.env.NODE_ENV || "").toLowerCase() === "production"
       ? "WARN"
-      : "DEBUG"
+      : "DEBUG",
   );
   try {
     logger.setLogLevel(level);

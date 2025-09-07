@@ -1,4 +1,4 @@
-// cdk/lib/flow-connection.ts
+// cdk/lib/bedrock/prompt-flows/flow-connections.ts
 import { CfnFlow } from "aws-cdk-lib/aws-bedrock";
 import { FlowNode } from "./flow-nodes";
 

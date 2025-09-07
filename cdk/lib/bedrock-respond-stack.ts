@@ -112,7 +112,7 @@ export class BedrockRespondStack extends Stack {
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(
           __dirname,
-          "../functions/websocket-connection-handler.ts",
+          "../functions/webSocket-connection-handler.ts",
         ),
         handler: "handler",
         timeout: Duration.seconds(60),
@@ -156,7 +156,7 @@ export class BedrockRespondStack extends Stack {
         description:
           "Lambda function to provide connection to websocket clients",
         runtime: Runtime.NODEJS_22_X,
-        entry: path.join(__dirname, "../functions/websocket-info.ts"),
+        entry: path.join(__dirname, "../functions/webSocket-into.ts"),
         handler: "handler",
         timeout: Duration.seconds(60),
         tracing: Tracing.ACTIVE,

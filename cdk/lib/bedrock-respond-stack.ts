@@ -124,7 +124,7 @@ export class BedrockRespondStack extends Stack {
           }),
         ],
         environment: {
-          SERVICE_NAME: getName(
+          serviceName: getName(
             "dreambody-v2",
             "middyService",
             props.gitHub.branch,
@@ -167,7 +167,7 @@ export class BedrockRespondStack extends Stack {
           }),
         ],
         environment: {
-          SERVICE_NAME: getName(
+          serviceName: getName(
             "dreambody-v2",
             "middyService",
             props.gitHub.branch,
@@ -209,7 +209,7 @@ export class BedrockRespondStack extends Stack {
           }),
         ],
         environment: {
-          SERVICE_NAME: getName(
+          serviceName: getName(
             "dreambody-v2",
             "middyService",
             props.gitHub.branch,
@@ -310,8 +310,8 @@ export class BedrockRespondStack extends Stack {
           }),
         ],
         environment: {
-          CALLBACK_URL: wsStage.callbackUrl,
-          SERVICE_NAME: getName(
+          callbackUrl: wsStage.callbackUrl,
+          serviceName: getName(
             "dreambody-v2",
             "middyService",
             props.gitHub.branch,

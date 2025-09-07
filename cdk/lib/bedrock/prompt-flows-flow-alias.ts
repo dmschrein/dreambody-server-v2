@@ -8,7 +8,7 @@ export interface FlowAliasProps {
   readonly description?: string;
   readonly flowArn: string;
   readonly name: string;
-  readonly flowVesrion: string;
+  readonly flowVersion: string;
   readonly tags?: Record<string, string>;
   readonly flow: Flow;
 }
@@ -35,7 +35,7 @@ export class FlowAlias extends Construct {
         name: props.name,
         routingConfiguration: [
           {
-            flowVersion: props.flowVesrion,
+            flowVersion: props.flowVersion,
           },
         ],
       },

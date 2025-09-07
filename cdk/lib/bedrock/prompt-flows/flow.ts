@@ -298,7 +298,7 @@ export class Flow extends Resource implements IFlow {
       flow: flow,
       flowArn: flow.flowArn,
       description: description,
-      flowVesrion: flowVersion,
+      flowVersion: flowVersion,
       name: name,
     };
 

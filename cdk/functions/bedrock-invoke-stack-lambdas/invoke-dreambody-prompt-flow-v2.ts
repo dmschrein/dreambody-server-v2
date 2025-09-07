@@ -54,16 +54,28 @@ export const functionHandler = async (
     "/dreambody-server/dreambodyV1/endNodeOutputName": {},
   };
 
-  const { _errors: paramErrors, ...parameters } = await getParametersByName(
-    parameterProps,
-    {
+  let parameters:
+    | (Record<string, unknown> & { _errors?: string[] | undefined })
+    | undefined;
+  try {
+    parameters = await getParametersByName(parameterProps, {
       throwOnError: false,
-    },
-  );
-
-  if (paramErrors?.length) {
+    });
+  } catch (error) {
+    logger.error("Error getting parameters from SSM", { error });
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ message: "Error getting parameters from SSM" }),
+    };
+  }
+  const missingParams = Object.keys(parameterProps).filter((name) => {
+    const value = parameters?.[name];
+    return typeof value !== "string" || value.length === 0;
+  });
+  if (missingParams.length) {
     logger.error(
-      `Missing required parameters from SSM: ${paramErrors.join(", ")}`,
+      `Missing required parameters from SSM: ${missingParams.join(", ")}`,
     );
     return {
       statusCode: 500,
@@ -72,16 +84,18 @@ export const functionHandler = async (
     };
   }
 
-  const flowId = parameters[
-    "/dreambody-server/dreambodyV1flowIdentifier"
+  const typedParams = parameters as Record<string, string>;
+
+  const flowId = typedParams[
+    "/dreambody-server/dreambodyV1/flowIdentifier"
   ] as string;
-  const flowAliasId = parameters[
+  const flowAliasId = typedParams[
     "/dreambody-server/dreambodyV1/flowAliasIdentifier"
   ] as string;
-  const startNodeName = parameters[
+  const startNodeName = typedParams[
     "/dreambody-server/dreambodyV1/startNodeName"
   ] as string;
-  const endNodeOutputName = parameters[
+  const endNodeOutputName = typedParams[
     "/dreambody-server/dreambodyV1/endNodeOutputName"
   ] as string;
 

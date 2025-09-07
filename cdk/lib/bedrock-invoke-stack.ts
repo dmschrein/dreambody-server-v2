@@ -92,7 +92,7 @@ export class BedrockInvokeStack extends Stack {
       },
     );
 
-    const api = new apigatewayv2.HttpApi(this, "dreambody-v2InvokeApiGatway", {
+    const api = new apigatewayv2.HttpApi(this, "dreambody-v2InvokeApiGateway", {
       corsPreflight: {
         allowOrigins: [
           // TODO: add allowed origins

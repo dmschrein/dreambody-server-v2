@@ -7,6 +7,8 @@ import {
 import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import { Construct } from "constructs";
 import { BedrockRespondStage } from "./stages/bedrock-respond-stage";
+import { BedrockNodesStage } from "./stages/bedrock-nodes-stage";
+import { BedrockInvokeStage } from "./stages/bedrock-invoke-stage";
 import { getName } from "../utils/resource-naming-util";
 
 export interface PipelineStackProps extends cdk.StackProps {
@@ -25,20 +27,23 @@ export class PipelineStack extends cdk.Stack {
       env: { account: props.devOpsAccount, region: "us-west-2" },
     });
 
+    // CodePipeline
     const source = CodePipelineSource.connection(
       `${props.gitHub.owner}/${props.gitHub.repo}`,
       props.gitHub.branch,
       {
         connectionArn: props.gitHub.connectionArn,
-      }
+      },
     );
 
+    // Synth
     const synth = new ShellStep("Synth", {
       input: source,
       commands: ["cd cdk && npm ci", "npx cdk synth"],
       primaryOutputDirectory: "cdk/cdk.out",
     });
 
+    // Pipeline
     const pipeline = new CodePipeline(
       this,
       getName(
@@ -46,7 +51,7 @@ export class PipelineStack extends cdk.Stack {
         "codePipeline",
         props.gitHub.branch,
         "",
-        "backend"
+        "backend",
       ),
       {
         pipelineName: getName(
@@ -54,7 +59,7 @@ export class PipelineStack extends cdk.Stack {
           "codePipeline",
           props.gitHub.branch,
           "",
-          "backend"
+          "backend",
         ),
         synth,
         crossAccountKeys: true,
@@ -63,15 +68,43 @@ export class PipelineStack extends cdk.Stack {
             buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
           },
         },
-      }
+      },
     );
 
     pipeline.addStage(
       new BedrockRespondStage(
         this,
         getName("dreambody-v2", "stage", props.gitHub.branch, "", "backend"),
-        props
-      )
+        props,
+      ),
+    );
+    //add bedrock node stage to the pipeline
+    pipeline.addStage(
+      new BedrockNodesStage(
+        this,
+        getName(
+          "dreambody-v2",
+          "stage",
+          props.gitHub.branch,
+          "",
+          "bedrockNodes",
+        ),
+        props,
+      ),
+    );
+    //add bedrock invoke stage to the pipeline
+    pipeline.addStage(
+      new BedrockInvokeStage(
+        this,
+        getName(
+          "dreambody-v2",
+          "stage",
+          props.gitHub.branch,
+          "",
+          "bedrockInvoke",
+        ),
+        props,
+      ),
     );
   }
 }

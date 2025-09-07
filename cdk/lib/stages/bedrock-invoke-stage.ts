@@ -1,20 +1,11 @@
-// cdk/lib/stages/bedrock-respond-stage.ts
+// cdk/lib/stages/bedrock-invoke-stage.ts
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { BedrockInvokeStack } from "../bedrock-invoke-stack";
 import { getName } from "../../utils/resource-naming-util";
+import { dreambodyStageProps } from "./bedrock-respond-stage";
 
-export interface dreambodyStageProps extends cdk.StageProps {
-  devOpsAccount: string;
-  gitHub: {
-    owner: string;
-    repo: string;
-    branch: string;
-    connectionArn: string;
-  };
-}
-
-export class BedrockRespondStage extends cdk.Stage {
+export class BedrockInvokeStage extends cdk.Stage {
   constructor(app: Construct, stageName: string, props: dreambodyStageProps) {
     super(app, stageName, props);
     new BedrockInvokeStack(
@@ -24,7 +15,7 @@ export class BedrockRespondStage extends cdk.Stage {
         "stack",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend",
+        "bedrockInvoke",
       ),
       props,
     );

@@ -1,0 +1,7 @@
+node_modules/
+.vite/
+coverage/
+cdk/cdk.out/
+cdk/dist/
+
+bootstrap-template.yaml

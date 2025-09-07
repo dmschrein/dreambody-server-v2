@@ -323,7 +323,7 @@ export class BedrockRespondStack extends Stack {
     );
 
     // outputs
-    new CfnOutput(this, "bedrockRespondLambdaArn  ", {
+    new CfnOutput(this, "bedrockRespondLambdaArn", {
       value: bedrockRespondLambda.functionArn,
       exportName: "bedrockRespondLambdaArn",
     });

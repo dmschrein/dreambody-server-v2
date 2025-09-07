@@ -1,4 +1,4 @@
-//cdk/functionswebSocket-connection-handler.ts
+//cdk/functions/webSocket-connection-handler.ts
 
 import middy from "@middy/core";
 import { injectLambdaContext } from "@aws-lambda-powertools/logger/middleware";

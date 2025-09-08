@@ -10,11 +10,17 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { HttpJwtAuthorizer } from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import * as ssm from "aws-cdk-lib/aws-ssm";
+import {
+  HttpLambdaAuthorizer,
+  HttpLambdaResponseType,
+} from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 
 export class BedrockInvokeStack extends Stack {
   constructor(scope: Construct, id: string, props: PipelineStackProps) {
     super(scope, id, props);
 
+    const enableAuth =
+      props.enableAuth ?? this.node.tryGetContext("enableAuth") === true;
     const eventBusArn = Fn.importValue("eventBusArn");
     const eventBus = EventBus.fromEventBusArn(
       this,
@@ -68,27 +74,53 @@ export class BedrockInvokeStack extends Stack {
     policyStatement.addResources("*");
     invokeLambda.addToRolePolicy(policyStatement);
 
-    const issuer = ssm.StringParameter.fromStringParameterAttributes(
-      this,
-      `dreambody-v2${props.gitHub.branch}-auth0Issuer`,
-      {
-        parameterName: `/dreambody-server/dreambodyV1/auth0/Issuer`,
-      },
-    ).stringValue;
+    let defaultAuthorizer;
+    if (enableAuth) {
+      // TODO: Fix once jwtAuthorizer is used and auth0 is added
+      const issuer = ssm.StringParameter.fromStringParameterAttributes(
+        this,
+        `dreambody-v2${props.gitHub.branch}-auth0Issuer`,
+        {
+          parameterName: `/dreambody-server/dreambodyV1/auth0/Issuer`,
+        },
+      ).stringValue;
 
-    const audience = ssm.StringParameter.fromStringParameterAttributes(
-      this,
-      `dreambody-v2${props.gitHub.branch}-auth0Audience`,
-      {
-        parameterName: `/dreambody-server/dreambodyV1/auth0/Audience`,
-      },
-    ).stringValue;
+      const audience = ssm.StringParameter.fromStringParameterAttributes(
+        this,
+        `dreambody-v2${props.gitHub.branch}-auth0Audience`,
+        {
+          parameterName: `/dreambody-server/dreambodyV1/auth0/Audience`,
+        },
+      ).stringValue;
 
-    const jwtAuthorizer = new HttpJwtAuthorizer(
-      "dreambody-v2InvokeApiAuthorizer",
-      issuer,
+      // TODO: Fix once jwtAuthorizer is used and auth0 is added
+      defaultAuthorizer = new HttpJwtAuthorizer(
+        "dreambody-v2InvokeApiAuthorizer",
+        issuer,
+        {
+          jwtAudience: [audience],
+        },
+      );
+    }
+
+    // const jwtAuthorizer = new HttpJwtAuthorizer(
+    //   "dreambody-v2InvokeApiAuthorizer",
+    //   issuer,
+    //   {
+    //     jwtAudience: [audience],
+    //   },
+    // );
+    const mockAuthFn = new NodejsFunction(this, "mock-authorizer-fn", {
+      runtime: Runtime.NODEJS_22_X,
+      entry: path.join(__dirname, "../functions/mock-authorizer.ts"),
+      handler: "handler",
+    });
+
+    const mockAuthorizer = new HttpLambdaAuthorizer(
+      "MockAuthorizer",
+      mockAuthFn,
       {
-        jwtAudience: [audience],
+        responseTypes: [HttpLambdaResponseType.SIMPLE],
       },
     );
 
@@ -116,7 +148,8 @@ export class BedrockInvokeStack extends Stack {
       },
       description:
         "HttpAPI for invoking a bedrock promptflow, includes authorizer",
-      defaultAuthorizer: jwtAuthorizer,
+      //defaultAuthorizer: jwtAuthorizer,
+      defaultAuthorizer: enableAuth ? defaultAuthorizer : mockAuthorizer,
     });
 
     const invokeIntegration = new HttpLambdaIntegration(

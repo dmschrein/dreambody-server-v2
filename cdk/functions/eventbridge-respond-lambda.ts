@@ -1,4 +1,4 @@
-//cdk/functionseventbridge-respond-lambda.ts
+//cdk/functions/eventbridge-respond-lambda.ts
 import middy from "@middy/core";
 import { injectLambdaContext } from "@aws-lambda-powertools/logger/middleware";
 import { logMetrics } from "@aws-lambda-powertools/metrics/middleware";
@@ -28,7 +28,7 @@ export const functionHandler = async (
       connectionId: string;
       response: object;
     }
-  >,
+  >
 ): Promise<void> => {
   setLoggingLevel(logger);
 

@@ -19,6 +19,7 @@ export interface PipelineStackProps extends cdk.StackProps {
     branch: string;
     connectionArn: string;
   };
+  enableAuth?: boolean; // TODO: Fix once jwtAuthorizer is used and auth0 is added
 }
 
 export class PipelineStack extends cdk.Stack {

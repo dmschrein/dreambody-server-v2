@@ -1,14 +1,14 @@
 // cdk/lib/stages/bedrock-nodes-stage.ts
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { BedrockInvokeStack } from "../bedrock-invoke-stack";
+import { BedrockStack } from "../bedrock-nodes-stack";
 import { getName } from "../../utils/resource-naming-util";
 import { dreambodyStageProps } from "./bedrock-respond-stage";
 
 export class BedrockNodesStage extends cdk.Stage {
   constructor(app: Construct, stageName: string, props: dreambodyStageProps) {
     super(app, stageName, props);
-    new BedrockInvokeStack(
+    new BedrockStack(
       this,
       getName(
         "dreambody-v2",

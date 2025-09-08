@@ -1,4 +1,4 @@
-//cdk/eventbridge-respond-lambda.ts
+//cdk/functionseventbridge-respond-lambda.ts
 import middy from "@middy/core";
 import { injectLambdaContext } from "@aws-lambda-powertools/logger/middleware";
 import { logMetrics } from "@aws-lambda-powertools/metrics/middleware";

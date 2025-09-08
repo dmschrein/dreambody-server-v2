@@ -178,47 +178,47 @@ export class BedrockRespondStack extends Stack {
       },
     );
 
-    // feedback lambda
-    const feedbackLambda = new NodejsFunction(
-      this,
-      getName(
-        "dreambody-v2",
-        "lambda",
-        props.gitHub.branch,
-        "",
-        "feedbackProcessing",
-      ),
-      {
-        functionName: getName(
-          "dreambody-v2",
-          "lambda",
-          props.gitHub.branch,
-          "",
-          "feedbackProcessing",
-        ),
-        description: "Lambda function to process feedback",
-        runtime: Runtime.NODEJS_22_X,
-        entry: path.join(__dirname, "../functions/feedback-processing.ts"),
-        handler: "handler",
-        timeout: Duration.seconds(30),
-        tracing: Tracing.ACTIVE,
-        initialPolicy: [
-          new PolicyStatement({
-            actions: ["ssm:GetParameter", "ssm:GetParameters"],
-            resources: [ssmResourceArn],
-          }),
-        ],
-        environment: {
-          serviceName: getName(
-            "dreambody-v2",
-            "middyService",
-            props.gitHub.branch,
-            "",
-            "wsFeedbackLambda",
-          ),
-        },
-      },
-    );
+    // feedback lambda: to get user feedback
+    // const feedbackLambda = new NodejsFunction(
+    //   this,
+    //   getName(
+    //     "dreambody-v2",
+    //     "lambda",
+    //     props.gitHub.branch,
+    //     "",
+    //     "feedbackProcessing"
+    //   ),
+    //   {
+    //     functionName: getName(
+    //       "dreambody-v2",
+    //       "lambda",
+    //       props.gitHub.branch,
+    //       "",
+    //       "feedbackProcessing"
+    //     ),
+    //     description: "Lambda function to process feedback",
+    //     runtime: Runtime.NODEJS_22_X,
+    //     entry: path.join(__dirname, "../functions/feedback-processing.ts"),
+    //     handler: "handler",
+    //     timeout: Duration.seconds(30),
+    //     tracing: Tracing.ACTIVE,
+    //     initialPolicy: [
+    //       new PolicyStatement({
+    //         actions: ["ssm:GetParameter", "ssm:GetParameters"],
+    //         resources: [ssmResourceArn],
+    //       }),
+    //     ],
+    //     environment: {
+    //       serviceName: getName(
+    //         "dreambody-v2",
+    //         "middyService",
+    //         props.gitHub.branch,
+    //         "",
+    //         "wsFeedbackLambda"
+    //       ),
+    //     },
+    //   }
+    // );
 
     // WebSocket API with 3 routes: $connect, $disconnect, echo, info
     const webSocketApi = new WebSocketApi(
@@ -255,12 +255,12 @@ export class BedrockRespondStack extends Stack {
       ),
     });
 
-    webSocketApi.addRoute("feedback", {
-      integration: new WebSocketLambdaIntegration(
-        "FeedbackIntegration",
-        feedbackLambda,
-      ),
-    });
+    // webSocketApi.addRoute("feedback", {
+    //   integration: new WebSocketLambdaIntegration(
+    //     "FeedbackIntegration",
+    //     feedbackLambda
+    //   ),
+    // });
 
     const wsStage = new WebSocketStage(
       this,
@@ -299,7 +299,10 @@ export class BedrockRespondStack extends Stack {
         description:
           "Lambda function to respond to events from the event bus and sends to the connectionID defined",
         runtime: Runtime.NODEJS_22_X,
-        entry: path.join(__dirname, "../functions/event-bridge-respond.ts"),
+        entry: path.join(
+          __dirname,
+          "../functions/eventbridge-respond-lambda.ts",
+        ),
         handler: "handler",
         timeout: Duration.seconds(60),
         tracing: Tracing.ACTIVE,
@@ -338,12 +341,7 @@ export class BedrockRespondStack extends Stack {
       resource: webSocketApi.apiId,
     });
     // Give permissions to all lambdas to manage connections
-    [
-      connectionLambda,
-      infoLambda,
-      feedbackLambda,
-      eventBridgeRespondLambda,
-    ].forEach((fn) =>
+    [connectionLambda, infoLambda, eventBridgeRespondLambda].forEach((fn) =>
       fn.addToRolePolicy(
         new PolicyStatement({
           actions: ["execute-api:ManageConnections"],

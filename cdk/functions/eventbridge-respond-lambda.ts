@@ -28,7 +28,7 @@ export const functionHandler = async (
       connectionId: string;
       response: object;
     }
-  >
+  >,
 ): Promise<void> => {
   setLoggingLevel(logger);
 

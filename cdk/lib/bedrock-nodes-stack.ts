@@ -144,7 +144,7 @@ export class BedrockStack extends Stack {
         type: FlowNodeDataType.STRING,
         valueFrom: {
           sourceNode: dreambodyV2PromptNode,
-          expression: "$.modelCompletion",
+          expression: "$.data.modelCompletion",
         },
       },
     });

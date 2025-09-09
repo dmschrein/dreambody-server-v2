@@ -56,7 +56,7 @@ export class BedrockStack extends Stack {
     const promptDeployVersion = new PromptVersion(
       this,
       "promptVersion1",
-      promptVersionProps,
+      promptVersionProps
     );
 
     const inputNode = FlowNode.input({
@@ -72,49 +72,49 @@ export class BedrockStack extends Stack {
         {
           name: "age",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.age" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.age" },
         },
         {
           name: "sex",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.sex" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.sex" },
         },
         {
           name: "metrics",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.metrics" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.metrics" },
         },
         {
           name: "experience",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.experience" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.experience" },
         },
         {
           name: "medical",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.medical" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.medical" },
         },
         {
           name: "goals",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.goals" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.goals" },
         },
         {
           name: "schedule",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.schedule" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.schedule" },
         },
         {
           name: "equipment",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.equipment" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.equipment" },
         },
         {
           name: "diet_preferences",
           type: FlowNodeDataType.STRING,
           valueFrom: {
             sourceNode: inputNode,
-            expression: "$.diet_preferences",
+            expression: "$.data.diet_preferences",
           },
         },
         {
@@ -122,18 +122,18 @@ export class BedrockStack extends Stack {
           type: FlowNodeDataType.STRING,
           valueFrom: {
             sourceNode: inputNode,
-            expression: "$.diet_constraints",
+            expression: "$.data.diet_constraints",
           },
         },
         {
           name: "activity",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.activity" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.activity" },
         },
         {
           name: "context",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.context" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data.context" },
         },
       ],
     });

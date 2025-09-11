@@ -56,7 +56,7 @@ export class BedrockStack extends Stack {
     const promptDeployVersion = new PromptVersion(
       this,
       "promptVersion1",
-      promptVersionProps
+      promptVersionProps,
     );
 
     const inputNode = FlowNode.input({

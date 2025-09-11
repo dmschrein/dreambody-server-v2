@@ -25,7 +25,7 @@ export class BedrockInvokeStack extends Stack {
     const eventBus = EventBus.fromEventBusArn(
       this,
       "dreambody-v2_event_bus",
-      eventBusArn,
+      eventBusArn
     );
 
     const invokeLambda = new NodejsFunction(
@@ -35,7 +35,7 @@ export class BedrockInvokeStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "bedrockInvoke",
+        "bedrockInvoke"
       ),
       {
         functionName: getName(
@@ -43,13 +43,13 @@ export class BedrockInvokeStack extends Stack {
           "lambda",
           props.gitHub.branch,
           "",
-          "invokePromptFlowV2",
+          "invokePromptFlowV2"
         ),
         description: "receives a document and invokes a promptflow",
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(
           __dirname,
-          `../functions/bedrock-invoke-stack-lambdas/invoke-dreambody-prompt-flow-v2.ts`,
+          `../functions/bedrock-invoke-stack-lambdas/invoke-dreambody-prompt-flow-v2.ts`
         ),
         handler: "handler",
         timeout: Duration.seconds(60),
@@ -64,7 +64,7 @@ export class BedrockInvokeStack extends Stack {
         environment: {
           eventBusName: eventBus.eventBusName,
         },
-      },
+      }
     );
 
     eventBus.grantPutEventsTo(invokeLambda);
@@ -82,7 +82,7 @@ export class BedrockInvokeStack extends Stack {
         `dreambody-v2${props.gitHub.branch}-auth0Issuer`,
         {
           parameterName: `/dreambody-server/dreambodyV1/auth0/Issuer`,
-        },
+        }
       ).stringValue;
 
       const audience = ssm.StringParameter.fromStringParameterAttributes(
@@ -90,7 +90,7 @@ export class BedrockInvokeStack extends Stack {
         `dreambody-v2${props.gitHub.branch}-auth0Audience`,
         {
           parameterName: `/dreambody-server/dreambodyV1/auth0/Audience`,
-        },
+        }
       ).stringValue;
 
       // TODO: Fix once jwtAuthorizer is used and auth0 is added
@@ -99,7 +99,7 @@ export class BedrockInvokeStack extends Stack {
         issuer,
         {
           jwtAudience: [audience],
-        },
+        }
       );
     }
 
@@ -121,7 +121,7 @@ export class BedrockInvokeStack extends Stack {
       mockAuthFn,
       {
         responseTypes: [HttpLambdaResponseType.SIMPLE],
-      },
+      }
     );
 
     const api = new apigatewayv2.HttpApi(this, "dreambody-v2InvokeApiGateway", {
@@ -154,13 +154,14 @@ export class BedrockInvokeStack extends Stack {
 
     const invokeIntegration = new HttpLambdaIntegration(
       "dreambody-v2InvokeIntegration",
-      invokeLambda,
+      invokeLambda
     );
 
     api.addRoutes({
       path: "/invoke",
       methods: [apigatewayv2.HttpMethod.POST],
       integration: invokeIntegration,
+      authorizer: undefined,
     });
   }
 }

@@ -33,7 +33,7 @@ export class BedrockRespondStack extends Stack {
       "eventBus",
       props.gitHub.branch,
       "",
-      "dreambodyRespondBackend"
+      "dreambodyRespondBackend",
     );
     const ssmResourceArn = `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/dreambody-v2/*`;
 
@@ -44,11 +44,11 @@ export class BedrockRespondStack extends Stack {
         "eventBus",
         props.gitHub.branch,
         "",
-        "dreambodyRespondBackend"
+        "dreambodyRespondBackend",
       ),
       {
         eventBusName: eventBusName,
-      }
+      },
     );
 
     // respond lambda
@@ -59,7 +59,7 @@ export class BedrockRespondStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend"
+        "bedrockRespondBackend",
       ),
       {
         functionName: getName(
@@ -67,7 +67,7 @@ export class BedrockRespondStack extends Stack {
           "lambda",
           props.gitHub.branch,
           "",
-          "bedrockRespondBackend"
+          "bedrockRespondBackend",
         ),
         description:
           "Lambda function to take results from the prompt flow and send to the event bus",
@@ -85,7 +85,7 @@ export class BedrockRespondStack extends Stack {
         environment: {
           EVENT_BUS_NAME: eventBusName,
         },
-      }
+      },
     );
 
     eventBus.grantPutEventsTo(bedrockRespondLambda);
@@ -98,7 +98,7 @@ export class BedrockRespondStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "connectionBackend"
+        "connectionBackend",
       ),
       {
         functionName: getName(
@@ -106,13 +106,13 @@ export class BedrockRespondStack extends Stack {
           "lambda",
           props.gitHub.branch,
           "",
-          "connectionBackend"
+          "connectionBackend",
         ),
         description: "Lambda function to handle WebSocket connections",
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(
           __dirname,
-          "../functions/webSocket-connection-handler.ts"
+          "../functions/webSocket-connection-handler.ts",
         ),
         handler: "handler",
         timeout: Duration.seconds(60),
@@ -129,10 +129,10 @@ export class BedrockRespondStack extends Stack {
             "middyService",
             props.gitHub.branch,
             "",
-            "wsConnectionLambdadreambodyRespondBackend"
+            "wsConnectionLambdadreambodyRespondBackend",
           ),
         },
-      }
+      },
     );
 
     // info lambda
@@ -143,7 +143,7 @@ export class BedrockRespondStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "webSocketInfo"
+        "webSocketInfo",
       ),
       {
         functionName: getName(
@@ -151,7 +151,7 @@ export class BedrockRespondStack extends Stack {
           "lambda",
           props.gitHub.branch,
           "",
-          "webSocketInfo"
+          "webSocketInfo",
         ),
         description:
           "Lambda function to provide connection to websocket clients",
@@ -172,10 +172,10 @@ export class BedrockRespondStack extends Stack {
             "middyService",
             props.gitHub.branch,
             "",
-            "wsInfoLambdaBedrockRespondBackend"
+            "wsInfoLambdaBedrockRespondBackend",
           ),
         },
-      }
+      },
     );
 
     // feedback lambda: to get user feedback
@@ -228,30 +228,30 @@ export class BedrockRespondStack extends Stack {
         "webSocketApi",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend"
+        "bedrockRespondBackend",
       ),
       {
         description: "Minimal echo WebSocket API",
         connectRouteOptions: {
           integration: new WebSocketLambdaIntegration(
             "ConnectIntegration",
-            connectionLambda
+            connectionLambda,
           ),
         },
         disconnectRouteOptions: {
           integration: new WebSocketLambdaIntegration(
             "DisconnectIntegration",
-            connectionLambda
+            connectionLambda,
           ),
         },
-      }
+      },
     );
 
     // add the info route integration
     webSocketApi.addRoute("info", {
       integration: new WebSocketLambdaIntegration(
         "InfoIntegration",
-        infoLambda
+        infoLambda,
       ),
     });
 
@@ -269,13 +269,13 @@ export class BedrockRespondStack extends Stack {
         "webSocketStage",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend"
+        "bedrockRespondBackend",
       ),
       {
         webSocketApi: webSocketApi,
         stageName: "prod",
         autoDeploy: true,
-      }
+      },
     );
 
     // create the eventBridgeRespondLambda
@@ -286,7 +286,7 @@ export class BedrockRespondStack extends Stack {
         "lambda",
         props.gitHub.branch,
         "",
-        "eventBridgeRespondBackend"
+        "eventBridgeRespondBackend",
       ),
       {
         functionName: getName(
@@ -294,14 +294,14 @@ export class BedrockRespondStack extends Stack {
           "lambda",
           props.gitHub.branch,
           "",
-          "eventBridgeRespondBackend"
+          "eventBridgeRespondBackend",
         ),
         description:
           "Lambda function to respond to events from the event bus and sends to the connectionID defined",
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(
           __dirname,
-          "../functions/eventbridge-respond-lambda.ts"
+          "../functions/eventbridge-respond-lambda.ts",
         ),
         handler: "handler",
         timeout: Duration.seconds(60),
@@ -319,10 +319,10 @@ export class BedrockRespondStack extends Stack {
             "middyService",
             props.gitHub.branch,
             "",
-            "bedrockRespondBackend"
+            "bedrockRespondBackend",
           ),
         },
-      }
+      },
     );
 
     // outputs
@@ -346,8 +346,8 @@ export class BedrockRespondStack extends Stack {
         new PolicyStatement({
           actions: ["execute-api:ManageConnections"],
           resources: [connectionsArns],
-        })
-      )
+        }),
+      ),
     );
 
     new events.Rule(
@@ -357,7 +357,7 @@ export class BedrockRespondStack extends Stack {
         "eventBridgeRule",
         props.gitHub.branch,
         "",
-        "bedrockRespondBackend"
+        "bedrockRespondBackend",
       ),
       {
         eventBus: eventBus,
@@ -369,7 +369,7 @@ export class BedrockRespondStack extends Stack {
           detailType: ["bedrockResponded"],
         },
         targets: [new LambdaFunction(eventBridgeRespondLambda)],
-      }
+      },
     );
   }
 }

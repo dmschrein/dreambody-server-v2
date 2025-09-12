@@ -26,6 +26,7 @@ export enum ModelType {
  *****************************************************************************/
 /**
  * Represents a Prompt Flow, either created with CDK or imported.
+ * This synthesizes the full Bedrock Flow resource (nodes + connections) and its IAM role.
  */
 export interface IFlow extends IResource {
   /**

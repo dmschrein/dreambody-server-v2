@@ -32,6 +32,7 @@ import { PromptVariant } from "@cdklabs/generative-ai-cdk-constructs/lib/cdk-lib
 /**
  * Defines the properties to create a Flow Node
  * Not exported as its use is internal-only.
+ * You compose these to build the flow’s DAG and required permissions.
  */
 interface FlowNodeProps {
   /**

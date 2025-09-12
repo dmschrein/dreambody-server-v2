@@ -57,7 +57,7 @@ export class BedrockInvokeStack extends Stack {
           new iam.PolicyStatement({
             actions: ["ssm:GetParameter", "ssm:GetParameters"],
             resources: [
-              `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/dreambody-v2/*`,
+              `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/dreambody-server/dreambodyV1/*`,
             ],
           }),
         ],

@@ -11,6 +11,9 @@ export interface FlowVersionProps {
 
 /**
  * Creates a version of the flow that you can deploy.
+ * FlowVersion (wraps CfnFlowVersion) and exposes the version string.
+ * Versions are what you route traffic to (directly or via aliases).
+ * Lets you decouple deployment from traffic routing and swap versions safely.
  */
 export class FlowVersion extends Construct {
   public readonly version: string;
@@ -29,7 +32,7 @@ export class FlowVersion extends Construct {
       {
         description: props.description,
         flowArn: props.flow.flowArn,
-      },
+      }
     );
 
     this.version = this._resource.attrVersion;

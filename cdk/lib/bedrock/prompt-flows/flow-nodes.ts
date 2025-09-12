@@ -32,6 +32,7 @@ import { PromptVariant } from "@cdklabs/generative-ai-cdk-constructs/lib/cdk-lib
 /**
  * Defines the properties to create a Flow Node
  * Not exported as its use is internal-only.
+ * You compose these to build the flow’s DAG and required permissions.
  */
 interface FlowNodeProps {
   /**
@@ -281,7 +282,7 @@ export class FlowNode {
               new PolicyStatement({
                 actions: ["bedrock:InvokeModel"],
                 resources: [variant.modelId!],
-              }),
+              })
           ),
       ],
     });
@@ -300,7 +301,7 @@ export class FlowNode {
    * - `retrievalResults` (Array)
    */
   public static knowledgeBaseRetrieve(
-    props: KnowledgeBaseRetrieveNodeProps,
+    props: KnowledgeBaseRetrieveNodeProps
   ): FlowNode {
     return new FlowNode({
       name: props.name,
@@ -343,7 +344,7 @@ export class FlowNode {
    * - `outputText` (String)
    */
   public static knowledgeBaseRetrieveAndGenerate(
-    props: KnowledgeBaseRetrieveAndGenerateNodeProps,
+    props: KnowledgeBaseRetrieveAndGenerateNodeProps
   ) {
     return new FlowNode({
       name: props.name,
@@ -797,7 +798,7 @@ export class FlowNode {
     } else {
       if (this.conditions.length < 2) {
         throw new Error(
-          "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods",
+          "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods"
         );
       } else {
         return this.conditions.flatMap((condition) => {
@@ -819,7 +820,7 @@ export class FlowNode {
   _computeConditions(): IResolvable {
     if (this.conditions.length < 2) {
       throw new Error(
-        "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods",
+        "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods"
       );
     } else {
       return Lazy.any(
@@ -833,7 +834,7 @@ export class FlowNode {
             });
           },
         },
-        { omitEmptyArray: true },
+        { omitEmptyArray: true }
       );
     }
   }
@@ -849,7 +850,7 @@ export class FlowNode {
           source: this,
           target: config.transitionTo,
           condition: config.name,
-        }),
+        })
       );
     }
   }

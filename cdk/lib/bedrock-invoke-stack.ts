@@ -74,6 +74,57 @@ export class BedrockInvokeStack extends Stack {
     policyStatement.addResources("*");
     invokeLambda.addToRolePolicy(policyStatement);
 
+    // === NEW: preview Lambda that uses a modified prompt ===
+    const invokeLambdaPreview = new NodejsFunction(
+      this,
+      getName(
+        "flowchartV2",
+        "lambda",
+        props.gitHub.branch,
+        "",
+        "bedrockInvokePreview"
+      ),
+      {
+        functionName: getName(
+          "flowchartV2",
+          "lambda",
+          props.gitHub.branch,
+          "",
+          "invokePromptFlowV2Preview"
+        ),
+        description:
+          "preview: accepts preferences and composes a modified prompt before invoking the flow",
+        runtime: Runtime.NODEJS_22_X,
+        entry: path.join(
+          __dirname,
+          "../functions/bedrock-invoke-stack-lambdas/invoke-flowchart-prompt-flow-preview.ts"
+        ),
+        handler: "handler",
+        timeout: Duration.seconds(60),
+        initialPolicy: [
+          new iam.PolicyStatement({
+            actions: ["ssm:GetParameter", "ssm:GetParameters"],
+            resources: [
+              `arn:aws:ssm:${props.env?.region}:${props.env?.account}:parameter/wealth-counsel/flowchartV2/*`,
+            ],
+          }),
+        ],
+        environment: {
+          eventBusName: eventBus.eventBusName,
+          // Optional: point preview at a different flow alias by setting these in SSM
+          // or reuse the same identifiers as prod while only changing the composed prompt.
+        },
+      }
+    );
+
+    eventBus.grantPutEventsTo(invokeLambdaPreview);
+
+    const policyStatementPreview = new iam.PolicyStatement();
+    policyStatementPreview.addActions("bedrock:InvokeFlow");
+    policyStatementPreview.addResources("*");
+    invokeLambdaPreview.addToRolePolicy(policyStatementPreview);
+    invokeLambdaPreview.addToRolePolicy(policyStatement);
+
     let defaultAuthorizer;
     if (enableAuth) {
       // TODO: Fix once jwtAuthorizer is used and auth0 is added
@@ -157,10 +208,21 @@ export class BedrockInvokeStack extends Stack {
       invokeLambda
     );
 
+    const invokeIntegrationPreview = new HttpLambdaIntegration(
+      "dreambody-v2InvokeIntegrationPreview",
+      invokeLambdaPreview
+    );
+
     api.addRoutes({
       path: "/invoke",
       methods: [apigatewayv2.HttpMethod.POST],
       integration: invokeIntegration,
+      authorizer: undefined,
+    });
+    api.addRoutes({
+      path: "/invoke-preview",
+      methods: [apigatewayv2.HttpMethod.POST],
+      integration: invokeIntegrationPreview,
       authorizer: undefined,
     });
   }

@@ -14,6 +14,8 @@ export interface FlowAliasProps {
 
 /**
  * Creates an alias of the flow that you can deploy.
+ * What it provides: FlowAlias (wraps CfnFlowAlias) and exposes an alias ID.
+ * Why it matters: Lets you decouple deployment from traffic routing and swap versions safely.
  */
 export class FlowAlias extends Construct {
   public readonly aliasId: string;
@@ -37,7 +39,7 @@ export class FlowAlias extends Construct {
             flowVersion: props.flowVersion,
           },
         ],
-      },
+      }
     );
 
     this.aliasId = this._resource.attrId;

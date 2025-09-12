@@ -7,38 +7,26 @@ import {
 import { FlowNode } from "../lib/bedrock/prompt-flows/flow-nodes";
 import { FlowNodeDataType } from "../lib/bedrock/prompt-flows/flow-node-props";
 import { Flow, FlowDefinition } from "./bedrock/prompt-flows/flow";
-import { Stack } from "aws-cdk-lib";
+import { Stack, CfnOutput, Annotations } from "aws-cdk-lib";
 import { PipelineStackProps } from "./pipeline-stack";
-import { dreambodyV2Prompt } from "./bedrock/prompts/dreambodyv2Prompt";
+import { flowchartV2PromptVersion4 } from "./bedrock/prompts/flowchartV2Prompt-version4-parens";
 
 export class BedrockStack extends Stack {
   constructor(parent: Construct, id: string, props: PipelineStackProps) {
     super(parent, id, props);
 
-    const dreambodyPrompt = new bedrock.Prompt(this, "dreambodyV2Prompt", {
-      promptName: `dreambody-v2_${props.gitHub.branch}_prompt`,
-      description:
-        "updated draft dreambody-v2 version 1 with changes to handle parens",
+    // 1) Define the Bedrock Prompt (template + model + variables).
+    // This prompt is versioned below and referenced by the Flow's prompt node.
+    const dreambodyPrompt = new bedrock.Prompt(this, "flowchartV2Prompt", {
+      promptName: `flowchart-v2_${props.gitHub.branch}_prompt`,
+      description: "Flowchart V2 prompt (version 4) with parentheses handling",
       variants: [
         PromptVariant.text({
           variantName: "foundation",
           model:
             bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0,
-          promptText: dreambodyV2Prompt,
-          promptVariables: [
-            "age",
-            "sex",
-            "metrics",
-            "experience",
-            "medical",
-            "goals",
-            "schedule",
-            "equipment",
-            "diet_preferences",
-            "diet_constraints",
-            "activity",
-            "context",
-          ],
+          promptText: flowchartV2PromptVersion4,
+          promptVariables: ["document"],
           inferenceConfiguration: {
             temperature: 0,
             topP: 0.999,
@@ -48,96 +36,48 @@ export class BedrockStack extends Stack {
       ],
     });
 
+    Annotations.of(this).addInfo(
+      `Created Prompt for branch ${props.gitHub.branch}`
+    );
+
     const promptVersionProps = {
       prompt: dreambodyPrompt,
-      description: "Version 1 with fix for parens in nodes 05/05",
+      description: "Flowchart V2 prompt version 4",
     };
 
+    // 2) Create a concrete Prompt Version that can be used by a Flow.
     const promptDeployVersion = new PromptVersion(
       this,
       "promptVersion1",
-      promptVersionProps,
+      promptVersionProps
     );
 
-    const inputNode = FlowNode.input({
-      name: "FlowInputNode",
-      inputDataType: FlowNodeDataType.OBJECT,
+    new CfnOutput(this, "flowchartV2PromptVersionArn", {
+      value: promptDeployVersion.versionArn,
+      description: "Flowchart V2 Prompt Version ARN used by the Flow",
     });
 
+    // 3) Define Flow nodes — Input node accepts a STRING payload (the document).
+    const inputNode = FlowNode.input({
+      name: "FlowInputNode",
+      inputDataType: FlowNodeDataType.STRING,
+    });
+
+    // Prompt node: map the single document variable to the input node.
     const dreambodyV2PromptNode = FlowNode.prompt({
       name: "dreambodyV2PromptNode",
       prompt: promptDeployVersion.prompt,
       promptArn: promptDeployVersion.versionArn,
       inputs: [
         {
-          name: "age",
+          name: "document",
           type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.age" },
-        },
-        {
-          name: "sex",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.sex" },
-        },
-        {
-          name: "metrics",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.metrics" },
-        },
-        {
-          name: "experience",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.experience" },
-        },
-        {
-          name: "medical",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.medical" },
-        },
-        {
-          name: "goals",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.goals" },
-        },
-        {
-          name: "schedule",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.schedule" },
-        },
-        {
-          name: "equipment",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.equipment" },
-        },
-        {
-          name: "diet_preferences",
-          type: FlowNodeDataType.STRING,
-          valueFrom: {
-            sourceNode: inputNode,
-            expression: "$.data.diet_preferences",
-          },
-        },
-        {
-          name: "diet_constraints",
-          type: FlowNodeDataType.STRING,
-          valueFrom: {
-            sourceNode: inputNode,
-            expression: "$.data.diet_constraints",
-          },
-        },
-        {
-          name: "activity",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.activity" },
-        },
-        {
-          name: "context",
-          type: FlowNodeDataType.STRING,
-          valueFrom: { sourceNode: inputNode, expression: "$.data.context" },
+          valueFrom: { sourceNode: inputNode, expression: "$.data" },
         },
       ],
     });
 
+    // Output node: returns the modelCompletion from the prompt node.
     const outputNode = FlowNode.output({
       name: "FlowOutputNode",
       outputData: {
@@ -149,14 +89,57 @@ export class BedrockStack extends Stack {
       },
     });
 
-    new Flow(this, "dreambody-v2Flow", {
-      name: `dreambody-v2_${props.gitHub.branch}_flow`,
-      description: `dreambody-v2 Flow`,
+    // 4) Assemble the Flow graph from the nodes above.
+    const dreambodyV2Flow = new Flow(this, "flowchart-v2Flow", {
+      name: `flowchart-v2_${props.gitHub.branch}_flow`,
+      description: `flowchart-v2 Flow`,
       definition: FlowDefinition.fromNodes([
         inputNode,
         dreambodyV2PromptNode,
         outputNode,
       ]),
+    });
+
+    Annotations.of(this).addInfo(
+      `Created Flowchart Flow with 3 nodes (input -> prompt -> output) for ${props.gitHub.branch}`
+    );
+
+    // 5) Create a Flow Version and an Alias to route traffic to that version.
+    const flowVersion = dreambodyV2Flow.createVersion(
+      "Flowchart V2 initial version"
+    );
+    const flowAliasId = dreambodyV2Flow.createAlias(
+      `flowchart-v2_${props.gitHub.branch}_alias`,
+      "Alias for flowchart v2",
+      flowVersion,
+      dreambodyV2Flow
+    );
+
+    // Helpful CloudFormation outputs for discovery/debugging.
+    new CfnOutput(this, "flowchartV2FlowArn", {
+      value: dreambodyV2Flow.flowArn,
+      description: "Flowchart V2 Flow ARN",
+      exportName: `flowchartV2FlowArn_${props.gitHub.branch}`,
+    });
+    new CfnOutput(this, "flowchartV2FlowId", {
+      value: dreambodyV2Flow.flowId,
+      description: "Flowchart V2 Flow ID",
+      exportName: `flowchartV2FlowId_${props.gitHub.branch}`,
+    });
+    new CfnOutput(this, "flowchartV2FlowVersion", {
+      value: dreambodyV2Flow.flowVersion,
+      description: "Flowchart V2 Flow Version (DRAFT unless versioned)",
+      exportName: `flowchartV2FlowVersion_${props.gitHub.branch}`,
+    });
+    new CfnOutput(this, "flowchartV2FlowVersionId", {
+      value: flowVersion,
+      description: "Flowchart V2 Flow Version ID (created above)",
+      exportName: `flowchartV2FlowVersionId_${props.gitHub.branch}`,
+    });
+    new CfnOutput(this, "flowchartV2FlowAliasId", {
+      value: flowAliasId,
+      description: "Flowchart V2 Flow Alias ID",
+      exportName: `flowchartV2FlowAliasId_${props.gitHub.branch}`,
     });
 
     // also must change names or  build will fail at deploy

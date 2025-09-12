@@ -12,6 +12,7 @@ export default [
       "**/dist/**",
       "**/coverage/**",
       "**/cdk.out/**",
+      "cdk/lib/bedrock/prompts/**",
     ],
   },
 
@@ -37,7 +38,14 @@ export default [
       "@typescript-eslint": tseslint.plugin,
     },
     rules: {
-      // Add any TS rule customizations here
+      "no-irregular-whitespace": [
+        "error",
+        {
+          skipStrings: true,
+          skipComments: true,
+          skipTemplates: true,
+        },
+      ],
     },
   },
 

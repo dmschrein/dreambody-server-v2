@@ -3,7 +3,7 @@
 curl -i -X POST "https://avi8afjcv1.execute-api.us-west-2.amazonaws.com/invoke" \
  -H "Content-Type: application/json" \
  -d '{
-"connectionId": "QuIx2cOnPHcCEOA=",
+"connectionId": "QuN7Ccu3PHcCFAQ=",
 "age": "32",
 "sex": "male",
 "metrics": "5'\''10\", 185 lb, ~20% body fat",

@@ -60,7 +60,7 @@ const validateInput = (b: FlowInputV2): b is FlowInputV2 =>
 
 function buildDirectives(
   docSet: DocSet | undefined,
-  prefs: Preferences | undefined
+  prefs: Preferences | undefined,
 ): string {
   const lines: string[] = [];
 
@@ -68,12 +68,12 @@ function buildDirectives(
   const roles = (prefs?.fiduciary_names ?? []).filter((r) =>
     docSet === "will"
       ? ["testator", "executor", "successor_executor"].includes(r)
-      : ["grantor", "initial_trustee", "successor_trustee"].includes(r)
+      : ["grantor", "initial_trustee", "successor_trustee"].includes(r),
   );
   if (roles.length) {
     lines.push(`Extract fiduciary names for: ${roles.join(", ")}.`);
     lines.push(
-      `Place each within the relevant node on a new line in parentheses.`
+      `Place each within the relevant node on a new line in parentheses.`,
     );
   }
 
@@ -86,7 +86,7 @@ function buildDirectives(
   // article references
   const fmt = prefs?.article_references ?? "article_number_only";
   lines.push(
-    `Article reference format: ${fmt}; append on a new line inside the relevant node.`
+    `Article reference format: ${fmt}; append on a new line inside the relevant node.`,
   );
 
   return lines.join("\n");
@@ -123,7 +123,7 @@ function composePrompt(body: FlowInputV2): string {
 }
 
 export const functionHandler = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   setLoggingLevel(logger);
   // Step 0: Start request
@@ -143,11 +143,11 @@ export const functionHandler = async (
   // Step 1: Load required SSM parameters for the flow/alias/nodes
   const { _errors: paramErrors, ...parameters } = await getParametersByName(
     parameterProps,
-    { throwOnError: false }
+    { throwOnError: false },
   );
   if (paramErrors?.length) {
     logger.error(
-      `Missing required parameters from SSM: ${paramErrors.join(", ")}`
+      `Missing required parameters from SSM: ${paramErrors.join(", ")}`,
     );
     return {
       statusCode: 500,
@@ -271,7 +271,7 @@ export const functionHandler = async (
       if (chunk.flowOutputEvent) {
         flowResponse = { ...flowResponse, ...chunk.flowOutputEvent };
         result = JSON.stringify(
-          (flowResponse as FlowOutputEvent).content?.document
+          (flowResponse as FlowOutputEvent).content?.document,
         );
         logger.debug("Received flow output event", {
           chunkCount,
@@ -302,7 +302,7 @@ export const functionHandler = async (
             }),
           },
         ],
-      })
+      }),
     );
     logger.info("EventBridge publish success");
 

@@ -119,27 +119,27 @@ export class BedrockStack extends Stack {
     new CfnOutput(this, "flowchartV2FlowArn", {
       value: dreambodyV2Flow.flowArn,
       description: "Flowchart V2 Flow ARN",
-      exportName: `flowchartV2FlowArn_${props.gitHub.branch}`,
+      exportName: `flowchartV2FlowArn-${props.gitHub.branch}`,
     });
     new CfnOutput(this, "flowchartV2FlowId", {
       value: dreambodyV2Flow.flowId,
       description: "Flowchart V2 Flow ID",
-      exportName: `flowchartV2FlowId_${props.gitHub.branch}`,
+      exportName: `flowchartV2FlowId-${props.gitHub.branch}`,
     });
     new CfnOutput(this, "flowchartV2FlowVersion", {
       value: dreambodyV2Flow.flowVersion,
       description: "Flowchart V2 Flow Version (DRAFT unless versioned)",
-      exportName: `flowchartV2FlowVersion_${props.gitHub.branch}`,
+      exportName: `flowchartV2FlowVersion-${props.gitHub.branch}`,
     });
     new CfnOutput(this, "flowchartV2FlowVersionId", {
       value: flowVersion,
       description: "Flowchart V2 Flow Version ID (created above)",
-      exportName: `flowchartV2FlowVersionId_${props.gitHub.branch}`,
+      exportName: `flowchartV2FlowVersionId-${props.gitHub.branch}`,
     });
     new CfnOutput(this, "flowchartV2FlowAliasId", {
       value: flowAliasId,
       description: "Flowchart V2 Flow Alias ID",
-      exportName: `flowchartV2FlowAliasId_${props.gitHub.branch}`,
+      exportName: `flowchartV2FlowAliasId-${props.gitHub.branch}`,
     });
 
     // also must change names or  build will fail at deploy

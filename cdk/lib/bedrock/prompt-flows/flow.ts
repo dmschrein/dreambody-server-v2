@@ -75,7 +75,7 @@ export class FlowDefinition {
       definition: {
         nodes: nodes.map((item) => item.asNodeCfnProperty()),
         connections: nodes.flatMap((item) =>
-          item.connections.map((conn) => conn.asCfnProperty())
+          item.connections.map((conn) => conn.asCfnProperty()),
         ),
       },
       nodes: nodes,
@@ -189,7 +189,7 @@ export class Flow extends Resource implements IFlow {
       "AmazonBedrockExecutionRoleForFlows_",
       {
         assumedBy: new iam.ServicePrincipal(
-          "bedrock.amazonaws.com"
+          "bedrock.amazonaws.com",
         ).withConditions({
           StringEquals: {
             "aws:SourceAccount": Stack.of(this).account,
@@ -205,7 +205,7 @@ export class Flow extends Resource implements IFlow {
             ],
           },
         }),
-      }
+      },
     );
 
     // ------------------------------------------------------
@@ -241,7 +241,7 @@ export class Flow extends Resource implements IFlow {
       new iam.PolicyStatement({
         actions: ["bedrock:GetFlow"],
         resources: [this.flowArn],
-      })
+      }),
     );
 
     // If data must be encrypted with custom KMS key, add appropriate permissions
@@ -283,7 +283,7 @@ export class Flow extends Resource implements IFlow {
       {
         flow: this,
         description: description,
-      }
+      },
     );
 
     return flowVersion.version;
@@ -293,7 +293,7 @@ export class Flow extends Resource implements IFlow {
     name: string,
     description: string,
     flowVersion: string,
-    flow: Flow
+    flow: Flow,
   ): string {
     const flowAliasProps: FlowAliasProps = {
       flow: flow,
@@ -306,7 +306,7 @@ export class Flow extends Resource implements IFlow {
     const flowAlias = new FlowAlias(
       flow,
       `FlowAlias-${flow._hash.slice(0, 16)}`,
-      flowAliasProps
+      flowAliasProps,
     );
 
     return flowAlias.aliasId;

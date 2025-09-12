@@ -97,7 +97,7 @@ export class BedrockInvokeStack extends Stack {
         runtime: Runtime.NODEJS_22_X,
         entry: path.join(
           __dirname,
-          "../functions/bedrock-invoke-stack-lambdas/invoke-flowchart-prompt-flow-preview.ts"
+          "../functions/bedrock-invoke-stack-lambdas/invoke-dreambody-prompt-flow-preview.ts"
         ),
         handler: "handler",
         timeout: Duration.seconds(60),
@@ -220,7 +220,7 @@ export class BedrockInvokeStack extends Stack {
       authorizer: undefined,
     });
     api.addRoutes({
-      path: "/invoke-preview",
+      path: "/preview",
       methods: [apigatewayv2.HttpMethod.POST],
       integration: invokeIntegrationPreview,
       authorizer: undefined,

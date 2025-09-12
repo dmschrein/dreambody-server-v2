@@ -39,7 +39,7 @@ export class FlowAlias extends Construct {
             flowVersion: props.flowVersion,
           },
         ],
-      }
+      },
     );
 
     this.aliasId = this._resource.attrId;

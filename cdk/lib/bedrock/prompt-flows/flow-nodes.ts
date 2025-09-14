@@ -282,8 +282,15 @@ export class FlowNode {
               new PolicyStatement({
                 actions: ["bedrock:InvokeModel"],
                 resources: [variant.modelId!],
-              }),
+              })
           ),
+        // If prompt uses an inference profile instead of a raw model, allow invoking it
+        new PolicyStatement({
+          actions: ["bedrock:InvokeModel"],
+          resources: [
+            `arn:aws:bedrock:${Aws.REGION}:${Aws.ACCOUNT_ID}:inference-profile/*`,
+          ],
+        }),
       ],
     });
   }
@@ -301,7 +308,7 @@ export class FlowNode {
    * - `retrievalResults` (Array)
    */
   public static knowledgeBaseRetrieve(
-    props: KnowledgeBaseRetrieveNodeProps,
+    props: KnowledgeBaseRetrieveNodeProps
   ): FlowNode {
     return new FlowNode({
       name: props.name,
@@ -344,7 +351,7 @@ export class FlowNode {
    * - `outputText` (String)
    */
   public static knowledgeBaseRetrieveAndGenerate(
-    props: KnowledgeBaseRetrieveAndGenerateNodeProps,
+    props: KnowledgeBaseRetrieveAndGenerateNodeProps
   ) {
     return new FlowNode({
       name: props.name,
@@ -798,7 +805,7 @@ export class FlowNode {
     } else {
       if (this.conditions.length < 2) {
         throw new Error(
-          "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods",
+          "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods"
         );
       } else {
         return this.conditions.flatMap((condition) => {
@@ -820,7 +827,7 @@ export class FlowNode {
   _computeConditions(): IResolvable {
     if (this.conditions.length < 2) {
       throw new Error(
-        "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods",
+        "Condition nodes must have configured at least a condition, and a default transition. Use the appropriate methods"
       );
     } else {
       return Lazy.any(
@@ -834,7 +841,7 @@ export class FlowNode {
             });
           },
         },
-        { omitEmptyArray: true },
+        { omitEmptyArray: true }
       );
     }
   }
@@ -850,7 +857,7 @@ export class FlowNode {
           source: this,
           target: config.transitionTo,
           condition: config.name,
-        }),
+        })
       );
     }
   }
